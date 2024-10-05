@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { GracefulShutdownModule } from 'nestjs-graceful-shutdown';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -7,6 +8,7 @@ import { SwaggerModule } from './shared/swagger/swagger.module';
 
 @Module({
   imports: [
+    GracefulShutdownModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],

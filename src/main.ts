@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { Logger, VersioningType } from '@nestjs/common';
 
 //pnpm packages
+import { setupGracefulShutdown } from 'nestjs-graceful-shutdown';
 import helmet from "helmet"
 import * as hpp from 'hpp';
 import * as compression from 'compression';
@@ -19,6 +20,8 @@ async function bootstrap() {
     bufferLogs: true,
     logger: console,
   });
+
+  setupGracefulShutdown({ app });
 
   const configService = app.get(ConfigService);
 
@@ -36,7 +39,6 @@ async function bootstrap() {
   app.use(hpp());
   app.use(compression());
   app.use(cookieParser());
-
   app.enableCors({
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
