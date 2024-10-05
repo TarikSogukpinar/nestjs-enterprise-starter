@@ -9,7 +9,7 @@ import helmet from "helmet"
 import * as hpp from 'hpp';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
-import { SwaggerService } from './modules/core/swagger/swagger.service';
+import { SwaggerService } from './shared/swagger/swagger.service';
 
 const logger = new Logger();
 
@@ -43,10 +43,10 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Authorization',
   });
 
-  const PORT = configService.get<number>('PORT');
+  const PORT = configService.get<number>('PORT', { infer: true });
 
   await app.listen(PORT);
 
   logger.log(`Application listening on port ${PORT}`);
 }
-bootstrap();
+void bootstrap();
