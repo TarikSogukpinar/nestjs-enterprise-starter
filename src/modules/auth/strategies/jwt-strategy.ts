@@ -8,7 +8,7 @@ import { UnauthorizedException } from '../../../exceptions/unauthorized.exceptio
 import { UserQueryService } from '../../user/user.query.service';
 
 @Injectable()
-export class JwtUserStrategy extends PassportStrategy(Strategy, 'authUser') {
+export class JwtUserStrategy extends PassportStrategy(Strategy, 'jwt') {
     constructor(
         private readonly configService: ConfigService,
         private readonly userQueryService: UserQueryService,
@@ -19,7 +19,6 @@ export class JwtUserStrategy extends PassportStrategy(Strategy, 'authUser') {
         });
     }
 
-    // validate method is called by passport-jwt when it has verified the token signature
     async validate(payload: JwtUserPayload) {
         const user = await this.userQueryService.findById(payload.user);
         if (!user) {
@@ -31,7 +30,7 @@ export class JwtUserStrategy extends PassportStrategy(Strategy, 'authUser') {
         if (payload.code !== user.registerCode) {
             throw UnauthorizedException.REQUIRED_RE_AUTHENTICATION();
         }
-        delete user.password; // remove password from the user object
+        delete user.password;
         return user;
     }
 }
