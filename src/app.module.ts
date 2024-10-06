@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { GracefulShutdownModule } from 'nestjs-graceful-shutdown';
-import { ThrottlerModule, ThrottlerModuleOptions, ThrottlerOptions, ThrottlerOptionsFactory } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -8,6 +8,7 @@ import { configuration } from './config/index';
 import { SwaggerModule } from './shared/swagger/swagger.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DatabaseModule } from './database/database.module';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -18,11 +19,20 @@ import { DatabaseModule } from './database/database.module';
     GracefulShutdownModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        gracefulShutdownTimeout: configService.get<number>('GRACEFUL_SHUTDOWN_TIMEOUT'),
-        keepNodeProcessAlive: configService.get<boolean>('KEEP_NODE_PROCESS_ALIVE'),
-        cleanup(app, signal) {
-          app.close();
-          signal ? console.log(`Received signal: ${signal}`) : null;
+        gracefulShutdownTimeout: configService.get<number>('GRACEFUL_SHUTDOWN_TIMEOUT') || 5000,
+        keepNodeProcessAlive: configService.get<boolean>('KEEP_NODE_PROCESS_ALIVE') || false,
+      }),
+      inject: [ConfigService],
+    }),
+    PrometheusModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        defaultMetrics: {
+          enabled: configService.get<boolean>('PROMETHEUS_DEFAULT_METRICS_ENABLED') || true,
+        },
+        path: configService.get<string>('PROMETHEUS_PATH') || '/metrics',
+        defaultLabels: {
+          app: configService.get<string>('PROMETHEUS_DEFAULT_LABELS_APP') || 'default-app-name',
         },
       }),
       inject: [ConfigService],
@@ -31,8 +41,8 @@ import { DatabaseModule } from './database/database.module';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => [
         {
-          ttl: parseInt(configService.get<string>('THROTTLE_TTL', '60'), 10),
-          limit: parseInt(configService.get<string>('THROTTLE_LIMIT', '10'), 10),
+          ttl: configService.get<number>('THROTTLE_TTL') || 60,
+          limit: configService.get<number>('THROTTLE_LIMIT') || 10,
         },
       ],
       inject: [ConfigService],
@@ -40,16 +50,17 @@ import { DatabaseModule } from './database/database.module';
     DatabaseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        host: configService.get<string>('DB_HOST'),
-        port: parseInt(configService.get<string>('DB_PORT'), 10),
-        user: configService.get<string>('DB_USER'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
+        host: configService.get<string>('POSTGRES_HOST'),
+        port: configService.get<number>('POSTGRES_PORT'),
+        user: configService.get<string>('POSTGRES_USER'),
+        password: configService.get<string>('POSTGRES_PASSWORD'),
+        database: configService.get<string>('POSTGRES_DB'),
       }),
       inject: [ConfigService],
     }),
     SwaggerModule,
     AuthModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],
