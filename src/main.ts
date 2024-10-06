@@ -16,8 +16,10 @@ const logger = new Logger();
 
 async function bootstrap() {
 
+  const nodeEnv = process.env.NODE_ENV;
+
   const app = await NestFactory.create(AppModule, {
-    bufferLogs: true,
+    bufferLogs: nodeEnv === 'production' ? false : true,
     logger: console,
   });
 
