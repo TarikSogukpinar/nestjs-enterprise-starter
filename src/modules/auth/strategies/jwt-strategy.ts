@@ -22,18 +22,18 @@ export class JwtUserStrategy extends PassportStrategy(Strategy, 'jwt') {
         });
     }
 
-    async validate(payload: JwtPayload): Promise<any> {
-        try {
-            const user = await this.userService.findById(payload.id);
-            if (!user) {
-                throw UnauthorizedException.UNAUTHORIZED_ACCESS();
-            }
+    // async validate(payload: JwtPayload) {
+    //     try {
+    //         const user = await this.userService.findById(payload.id);
+    //         if (!user) {
+    //             throw UnauthorizedException.UNAUTHORIZED_ACCESS();
+    //         }
 
-            delete user.password;
-            return user;
-        } catch (error) {
-            throw UnauthorizedException.UNAUTHORIZED_ACCESS();
-        }
+    //         delete user.password;
+    //         return user;
+    //     } catch (error) {
+    //         throw UnauthorizedException.UNAUTHORIZED_ACCESS();
+    //     }
 
-    }
+    // }
 }

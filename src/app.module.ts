@@ -55,7 +55,7 @@ import * as schema from './drizzle/schema';
           url: process.env.POSTGRESQL_URI,
           options: { schema },
           migrationOptions: { migrationsFolder: './migration' },
-          
+
         };
       },
     }),
