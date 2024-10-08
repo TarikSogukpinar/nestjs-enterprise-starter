@@ -7,8 +7,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configuration } from './config/index';
 import { SwaggerModule } from './shared/swagger/swagger.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { DatabaseModule } from './database/database.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { NestDrizzleModule } from './drizzle/drizzle.module';
+import * as schema from './drizzle/schema';
 
 @Module({
   imports: [
@@ -47,16 +48,16 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
       ],
       inject: [ConfigService],
     }),
-    DatabaseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        host: configService.get<string>('POSTGRES_HOST'),
-        port: configService.get<number>('POSTGRES_PORT'),
-        user: configService.get<string>('POSTGRES_USER'),
-        password: configService.get<string>('POSTGRES_PASSWORD'),
-        database: configService.get<string>('POSTGRES_DB'),
-      }),
-      inject: [ConfigService],
+    NestDrizzleModule.forRootAsync({
+      useFactory: () => {
+        return {
+          driver: 'postgres-js',
+          url: process.env.POSTGRESQL_URI,
+          options: { schema },
+          migrationOptions: { migrationsFolder: './migration' },
+          
+        };
+      },
     }),
     SwaggerModule,
     AuthModule,

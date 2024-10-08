@@ -1,12 +1,12 @@
-import { Injectable } from "@nestjs/common";
-import { databaseSchema } from "src/database/databaseSchema";
-import { DrizzleService } from "src/database/drizzle.service";
+import { Inject, Injectable } from '@nestjs/common';
+import * as schema from '../../drizzle/schema'
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 @Injectable()
 export class AuthService {
-    constructor(private readonly drizzleService: DrizzleService) { }
+    constructor(@Inject('DRIZZLE_ORM') private conn: PostgresJsDatabase<typeof schema>) { }
 
     async getALlUsers() {
-        return await this.drizzleService.db.select().from(databaseSchema.users).execute();
+        return this.conn.query.users.findMany();
     }
 }
