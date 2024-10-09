@@ -1,27 +1,27 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post, ValidationPipe } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { RegisterUserDto } from "./dto";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { RegisterResponseDto, RegisterReqDto, LoginReqDto } from "./dto";
 
 
-@Controller('auth')
+@Controller({ path: 'auth', version: '1' })
+@ApiTags('Auth')
+@ApiBearerAuth()
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
     @Post('register')
     @ApiOperation({ summary: 'Register a new user' })
     @ApiResponse({ status: 200, description: 'User registered successfully' })
-    async register(@Body() registerUserDto: RegisterUserDto) {
-        const result = await this.authService.registerUserService(registerUserDto);
+    async register(@Body(ValidationPipe) registerReqDto: RegisterReqDto): Promise<RegisterResponseDto> {
+        return await this.authService.registerService(registerReqDto);
 
-        return {
-            message: 'Kullanıcı başarıyla kaydedildi!',
-            result, // Sonuç döndürülüyor (UUID, email, role)
-        };
     }
 
-    // @Post('login')
-    // async login() {
-    //     return await this.authService.getALlUsers();
-    // }
+    @Post('login')
+    @ApiOperation({ summary: 'Login a user' })
+    @ApiResponse({ status: 200, description: 'User logged in successfully' })
+    async login(@Body(ValidationPipe) loginReqDto: LoginReqDto): Promise<any> {
+        return await this.authService.loginService(loginReqDto);
+    }
 }
