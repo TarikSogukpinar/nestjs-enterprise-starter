@@ -74,9 +74,6 @@ import { AllExceptionsFilter, BadRequestExceptionFilter, ForbiddenExceptionFilte
     { provide: APP_FILTER, useClass: ForbiddenExceptionFilter },
     { provide: APP_FILTER, useClass: NotFoundExceptionFilter },
     {
-      // Allowing to do validation through DTO
-      // Since class-validator library default throw BadRequestException, here we use exceptionFactory to throw
-      // their internal exception so that filter can recognize it
       provide: APP_PIPE,
       useFactory: () =>
         new ValidationPipe({

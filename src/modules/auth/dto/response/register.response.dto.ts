@@ -1,4 +1,4 @@
-export type RegisterResponseDto = {
+export type RegisterResDto = {
     id: number
     name: string
     email: string

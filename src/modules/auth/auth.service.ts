@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { HashingService } from 'src/shared/hashing/hashing.service';
-import { RegisterResponseDto, RegisterReqDto, LoginReqDto, LoginResDto } from './dto';
+import { RegisterResDto, RegisterReqDto, LoginReqDto, LoginResDto } from './dto';
 import { BadRequestException } from 'src/exceptions/bad-request.exception';
 import { TokenService } from 'src/shared/token/token.service';
 import { UnauthorizedException } from 'src/exceptions';
@@ -14,7 +14,7 @@ export class AuthService {
         private readonly hashingService: HashingService,
         private readonly tokenService: TokenService) { }
 
-    async registerService(registerReqDto: RegisterReqDto): Promise<RegisterResponseDto> {
+    async registerService(registerReqDto: RegisterReqDto): Promise<RegisterResDto> {
 
         const { name, email, password } = registerReqDto;
 

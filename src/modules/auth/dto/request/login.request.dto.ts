@@ -12,9 +12,9 @@ export class LoginReqDto {
     @IsString()
     @MinLength(6)
     @MaxLength(50)
-    // @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    //     message: 'Password is too weak',
-    // })
+    @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+        message: 'Password is too weak',
+    })
     @ApiProperty({
         description:
             'Password for the user account. Must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, and one special character.',

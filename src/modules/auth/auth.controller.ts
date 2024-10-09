@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, ValidationPipe } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { RegisterResponseDto, RegisterReqDto, LoginReqDto } from "./dto";
+import { RegisterResDto, RegisterReqDto, LoginReqDto } from "./dto";
 
 
 @Controller({ path: 'auth', version: '1' })
@@ -13,7 +13,7 @@ export class AuthController {
     @Post('register')
     @ApiOperation({ summary: 'Register a new user' })
     @ApiResponse({ status: 200, description: 'User registered successfully' })
-    async register(@Body(ValidationPipe) registerReqDto: RegisterReqDto): Promise<RegisterResponseDto> {
+    async register(@Body(ValidationPipe) registerReqDto: RegisterReqDto): Promise<RegisterResDto> {
         return await this.authService.registerService(registerReqDto);
 
     }

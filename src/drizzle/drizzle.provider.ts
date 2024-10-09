@@ -1,7 +1,3 @@
-// import {
-//     DRIZZLE_ORM,
-//     NEST_DRIZZLE_OPTIONS,
-// } from 'src/core/constants/db.constants';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { DrizzleService } from './drizzle.service';
 import { NestDrizzleOptions } from './interfaces/drizzle.interfaces';
