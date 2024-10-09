@@ -59,4 +59,36 @@ $ pnpm run test:e2e
 $ pnpm run test:cov
 ```
 
+```
+NODE_ENV = development
 
+API_GLOBAL_PREFIX = /api
+
+PORT = 3010
+
+HOST = localhost
+
+LOG_LEVEL = debug
+
+POSTGRESQL_URI = your_url
+
+JWT_SECRET_KEY = supersecretkey
+
+JWT_PUBLIC_KEY = supersecretkey
+
+JWT_EXPIRATION_TIME = 1d
+
+THROTTLE_TTL= 60
+
+THROTTLE_LIMIT= 10
+
+GRACEFUL_SHUTDOWN_TIMEOUT = 5000
+
+KEEP_NODE_PROCESS_ALIVE = false
+
+PROMETHEUS_DEFAULT_METRICS_ENABLED = true
+
+PROMETHEUS_PATH = /metrics
+
+PROMETHEUS_DEFAULT_LABELS_APP = nestjs-enterprise-starter
+```
