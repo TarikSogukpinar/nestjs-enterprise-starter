@@ -1,39 +1,42 @@
 import { ConfigService } from '@nestjs/config';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import * as schema from 'src/drizzle/schema';
-
-import { UnauthorizedException } from '../../../exceptions/unauthorized.exception';
-import { JwtPayload } from '../interfaces/jwt-payload.interface';
+import { eq } from 'drizzle-orm';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { UserService } from 'src/modules/user/user.service';
 
 
 @Injectable()
-export class JwtUserStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(
+        @Inject('DRIZZLE_ORM') private readonly drizzleService: PostgresJsDatabase,
         private readonly configService: ConfigService,
-        private readonly userService: UserService
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: configService.get('JWT_SECRET_KEY'),
+            secretOrKey: configService.get<string>('JWT_SECRET_KEY'),
+            expiresIn: configService.get<string>('JWT_EXPIRATION_TIME'),
         });
     }
 
-    // async validate(payload: JwtPayload) {
-    //     try {
-    //         const user = await this.userService.findById(payload.id);
-    //         if (!user) {
-    //             throw UnauthorizedException.UNAUTHORIZED_ACCESS();
-    //         }
+    async validate(payload: { id: number }) {
+        try {
+            const user = await this.drizzleService
+                .select()
+                .from(schema.users)
+                .where(eq(schema.users.id, payload.id))
+                .limit(1);
 
-    //         delete user.password;
-    //         return user;
-    //     } catch (error) {
-    //         throw UnauthorizedException.UNAUTHORIZED_ACCESS();
-    //     }
 
-    // }
+            if (!user.length) {
+                throw new UnauthorizedException();
+            }
+
+            const { password, ...result } = user[0];
+            return result;
+        } catch (error) {
+            throw new UnauthorizedException();
+        }
+    }
 }

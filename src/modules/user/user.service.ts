@@ -16,4 +16,8 @@ export class UserService {
     async createUser(newUser: any) {
         return this.userRepository.createUser(newUser);
     }
+
+    async getAllUsers() {
+        return this.userRepository.findAllUsers();
+    }
 }

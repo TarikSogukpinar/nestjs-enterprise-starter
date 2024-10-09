@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { Logger, VersioningType } from '@nestjs/common';
+import { SwaggerService } from './shared/swagger/swagger.service';
 
 //pnpm packages
 import { setupGracefulShutdown } from 'nestjs-graceful-shutdown';
@@ -10,7 +11,7 @@ import helmet from "helmet"
 import * as hpp from 'hpp';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
-import { SwaggerService } from './shared/swagger/swagger.service';
+
 
 const logger = new Logger();
 

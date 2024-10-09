@@ -13,12 +13,18 @@ import { NestDrizzleModule } from './drizzle/drizzle.module';
 import * as schema from './drizzle/schema';
 import { ValidationError } from 'class-validator';
 import { AllExceptionsFilter, BadRequestExceptionFilter, ForbiddenExceptionFilter, NotFoundExceptionFilter, UnauthorizedExceptionFilter, ValidationExceptionFilter } from './filters';
-
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
+    }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
     }),
     GracefulShutdownModule.forRootAsync({
       imports: [ConfigModule],

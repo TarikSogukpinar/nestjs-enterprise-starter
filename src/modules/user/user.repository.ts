@@ -9,7 +9,7 @@ export class UserRepository {
 
     constructor(@Inject('DRIZZLE_ORM') private drizzleService: PostgresJsDatabase<typeof schema>) { }
 
-    async findByEmail(email: string): Promise<any | null> {
+    async findByEmail(email: string) {
         const result = await this.drizzleService
             .select()
             .from(users)
@@ -20,7 +20,7 @@ export class UserRepository {
         return result[0] || null;
     }
 
-    async findByPassword(password: string): Promise<any | null> {
+    async findByPassword(password: string) {
         const result = await this.drizzleService
             .select()
             .from(users)
@@ -31,7 +31,7 @@ export class UserRepository {
         return result[0] || null;
     }
 
-    async createUser(newUser: any): Promise<any> {
+    async createUser(newUser: any) {
         const [user] = await this.drizzleService
             .insert(users)
             .values(newUser)
@@ -39,5 +39,14 @@ export class UserRepository {
             .execute();
 
         return user;
+    }
+
+    async findAllUsers() {
+        const result = await this.drizzleService
+            .select()
+            .from(users)
+            .execute();
+
+        return result;
     }
 }
